@@ -43,8 +43,8 @@ def find_price_column(df):
     return None
 
 def filter_itogo(df):
-    first_col = df.columns[0]
-    return df[~df[first_col].str.strip().str.lower().str.startswith("итого")]
+    return df[~df[first_col].astype(str).str.strip().str.lower().str.startswith("итого")]
+
 
 def generate_docx(table_df, total):
     doc = Document()
