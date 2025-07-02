@@ -12,6 +12,11 @@ sum_with_nds = st.number_input("Введите сумму:", min_value=0.0, step
 includes_nds = st.checkbox("Сумма включает НДС", value=True)
 desired_profit = st.number_input("Желаемая чистая прибыль (можно оставить 0):", min_value=0.0, step=1000.0)
 
+if known_party == "Клиента":
+    partner_nds = st.checkbox("Подрядчик работает с НДС", value=True)
+else:
+    partner_nds = True  # по умолчанию если известна сумма от подрядчика
+
 if st.button("🔁 Рассчитать встречную сумму"):
     nds_rate = 0.2
 
@@ -46,12 +51,22 @@ if st.button("🔁 Рассчитать встречную сумму"):
             nds_client = net_client * nds_rate
             sum_with_nds = net_client + nds_client
 
-        tax_base = net_client / (1 + (0.75 * nds_rate)) - (desired_profit / 0.95)
-        net_sub = tax_base
-        nds_sub = net_sub * nds_rate
-        total_sub_sum = net_sub + nds_sub
+        tax_base = desired_profit / 0.95
+        profitless_base = net_client - tax_base
+
+        if partner_nds:
+            # если подрядчик с НДС
+            net_sub = profitless_base / (1 + 0.75 * nds_rate)
+            nds_sub = net_sub * nds_rate
+            total_sub_sum = net_sub + nds_sub
+            st.markdown(f"📤 **Можно заплатить подрядчику:** `{total_sub_sum:,.2f} ₽`".replace(",", " ").replace(".", ","))
+            st.markdown(f"💰 **НДС подрядчика:** `{nds_sub:,.2f} ₽`".replace(",", " ").replace(".", ","))
+            st.markdown(f"📦 **Нетто подрядчику:** `{net_sub:,.2f} ₽`".replace(",", " ").replace(".", ","))
+        else:
+            net_sub = profitless_base
+            total_sub_sum = net_sub
+            st.markdown(f"📤 **Можно заплатить подрядчику (без НДС):** `{total_sub_sum:,.2f} ₽`".replace(",", " ").replace(".", ","))
 
         st.markdown(f"📦 **Сумма от клиента:** `{sum_with_nds:,.2f} ₽`".replace(",", " ").replace(".", ","))
         st.markdown(f"💰 **НДС клиента:** `{nds_client:,.2f} ₽`".replace(",", " ").replace(".", ","))
-        st.markdown(f"📤 **Можно заплатить подрядчику:** `{total_sub_sum:,.2f} ₽`".replace(",", " ").replace(".", ","))
         st.markdown(f"🧮 **Чистая прибыль будет:** `{desired_profit:,.2f} ₽`".replace(",", " ").replace(".", ","))
