@@ -128,34 +128,18 @@ if uploaded_file:
 
             nds_included = partner_nds and st.checkbox("Сумма в спецификации включает НДС", value=True)
 
-            col1, col2 = st.columns(2)
-            with col1:
-                calc_button = st.button("🔁 Пересчитать прибыль")
-            with col2:
-                spec_button = st.button("📋 Показать спецификацию и выгрузить в DOCX/Excel")
+            
+col1, col2 = st.columns(2)
+with col1:
+    calc_button = st.button("🔁 Пересчитать прибыль", key="calc_button")
+with col2:
+    spec_button = st.button("📋 Показать спецификацию и выгрузить в DOCX/Excel", key="spec_button")
 
-            if desired_profit > 0:
-                d = desired_profit
-                if partner_nds:
-                    if nds_included:
-                        nds_sub = total_partner_sum * 20 / 120
-                        net_sub = total_partner_sum - nds_sub
-                    else:
-                        net_sub = total_partner_sum
-                    nds_loss = net_sub * 0.2 * 0.75
-                    tax_base = d / 0.95
-                    net_client = net_sub + nds_loss + tax_base
-                    x = net_client * 1.2
-                else:
-                    net_sum = d / 0.95 + total_partner_sum
-                    x = net_sum * 1.2
-                client_sum = x
-                st.info("🧾 Чтобы получить **{} ₽** прибыли, нужно выставить клиенту: **{} ₽**".format(
-                    f"{d:,.2f}".replace(",", " ").replace(".", ","),
-                    f"{x:,.2f}".replace(",", " ").replace(".", ","))
-                )
+proceed_to_calc = calc_button and (client_sum > 0 or desired_profit > 0) and (uploaded_file or use_manual)
 
-            if calc_button and client_sum > 0:
+if proceed_to_calc:
+    st.markdown("### 📊 Расчёт прибыли")
+
                 st.markdown("### 📊 Расчёт прибыли")
                 client_nds = client_sum * 20 / 120
                 client_net = client_sum - client_nds
