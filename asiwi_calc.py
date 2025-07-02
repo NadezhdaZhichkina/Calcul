@@ -65,6 +65,21 @@ def generate_docx(table_df, total):
     byte_io.seek(0)
     return byte_io
 
+
+# ➕ Альтернатива: ручной ввод суммы подрядчику (если нет спецификации)
+st.markdown("### 📝 Или введите сумму вручную (если нет спецификации)")
+manual_sum = st.number_input("Сумма подрядчику:", min_value=0.0, step=1000.0, format="%.2f", key="manual_sum")
+manual_nds = False
+if partner_nds:
+    manual_nds = st.checkbox("Сумма включает НДС (ручной ввод)", value=True, key="manual_nds_checkbox")
+use_manual = False
+if manual_sum > 0 and uploaded_file is None:
+    use_manual = True
+    total_partner_sum = manual_sum
+    nds_included = manual_nds
+    df_spec = pd.DataFrame({})
+
+
 if uploaded_file:
     df_spec = parse_file(uploaded_file)
     if df_spec.empty:
