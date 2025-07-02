@@ -139,8 +139,7 @@ proceed_to_calc = calc_button and (client_sum > 0 or desired_profit > 0) and (up
 
 if proceed_to_calc:
     st.markdown("### 📊 Расчёт прибыли")
-
-                st.markdown("### 📊 Расчёт прибыли")
+    st.markdown("### 📊 Расчёт прибыли")
                 client_nds = client_sum * 20 / 120
                 client_net = client_sum - client_nds
 
